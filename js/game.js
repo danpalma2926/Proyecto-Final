@@ -6,11 +6,14 @@ var Colors = {
     brownDark:0x23190f,
     pink:0xF5986E,
     yellow:0xf4ce93,
-    blue:0x68c3c0,
-
+    blue:0x212879,
+    grey:0x7C7F90,
+    bluef:0x061FF0,
+    mora:0x7C72A0,
+    mor:0x3B04EB,
+    az: 0x3746D0,
+    black: 0x050505
 };
-
-///////////////
 
 // GAME VARIABLES
 var game;
@@ -56,8 +59,8 @@ function resetGame(){
           planeCollisionDisplacementY:0,
           planeCollisionSpeedY:0,
 
-          seaRadius:600,
-          seaLength:800,
+          seaRadius:2000,
+          seaLength:2000,
           //seaRotationSpeed:0.006,
           wavesMinAmp : 5,
           wavesMaxAmp : 20,
@@ -75,10 +78,10 @@ function resetGame(){
           distanceForCoinsSpawn:100,
 
           ennemyDistanceTolerance:10,
-          ennemyValue:10,
+          ennemyValue:25, //Aumentamos el daño para que en dos golpes termine el juego 
           ennemiesSpeed:.6,
           ennemyLastSpawn:0,
-          distanceForEnnemiesSpawn:50,
+          distanceForEnnemiesSpawn:90, //disminuimos la velocidad
 
           status : "playing",
          };
@@ -117,8 +120,8 @@ function createScene() {
     farPlane
     );
   scene.fog = new THREE.Fog(0xf7d9aa, 100,950);
-  camera.position.x = 0;
-  camera.position.z = 200;
+  camera.position.x = -10; //Se cambian la posición para una mayor dificultad y apreciación del personaje
+  camera.position.z = 100; //Cambiamos para tener una perspectiva más cerca de la cámara
   camera.position.y = game.planeDefaultHeight;
   //camera.lookAt(new THREE.Vector3(0, 400, 0));
 
@@ -136,9 +139,6 @@ function createScene() {
   controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.minPolarAngle = -Math.PI / 2;
   controls.maxPolarAngle = Math.PI ;
-
-  //controls.noZoom = true;
-  //controls.noPan = true;
   //*/
 }
 
@@ -188,19 +188,19 @@ function createLights() {
 
   hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
 
-  ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+  ambientLight = new THREE.AmbientLight(0x4D0A5F, .10);
 
   shadowLight = new THREE.DirectionalLight(0xffffff, .9);
-  shadowLight.position.set(150, 350, 350);
+  shadowLight.position.set(250, 350, 500); //Modificamos un poco la sombra y su posición
   shadowLight.castShadow = true;
-  shadowLight.shadow.camera.left = -400;
-  shadowLight.shadow.camera.right = 400;
-  shadowLight.shadow.camera.top = 400;
-  shadowLight.shadow.camera.bottom = -400;
-  shadowLight.shadow.camera.near = 1;
+  shadowLight.shadow.camera.left = -800; //Modificamos un poco la luz de la sombra
+  shadowLight.shadow.camera.right = 1500; //Modificamos la luz de la sombra
+  shadowLight.shadow.camera.top = 1000; //Modificamos para que se vea más cerca
+  shadowLight.shadow.camera.bottom = -800; //Se modifico también
+  shadowLight.shadow.camera.near = 20; //Modificamos para aumentar el tamaño
   shadowLight.shadow.camera.far = 1000;
-  shadowLight.shadow.mapSize.width = 4096;
-  shadowLight.shadow.mapSize.height = 4096;
+  shadowLight.shadow.mapSize.width = 2000;
+  shadowLight.shadow.mapSize.height = 2000;
 
   var ch = new THREE.CameraHelper(shadowLight.shadow.camera);
 
@@ -217,20 +217,20 @@ var Pilot = function(){
   this.mesh.name = "pilot";
   this.angleHairs=0;
 
-  var bodyGeom = new THREE.BoxGeometry(15,15,15);
-  var bodyMat = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+  var bodyGeom = new THREE.BoxGeometry(35,35,15);
+  var bodyMat = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
   var body = new THREE.Mesh(bodyGeom, bodyMat);
   body.position.set(2,-12,0);
 
   this.mesh.add(body);
 
-  var faceGeom = new THREE.BoxGeometry(10,10,10);
+  var faceGeom = new THREE.BoxGeometry(25,25,20);
   var faceMat = new THREE.MeshLambertMaterial({color:Colors.pink});
   var face = new THREE.Mesh(faceGeom, faceMat);
   this.mesh.add(face);
 
-  var hairGeom = new THREE.BoxGeometry(4,4,4);
-  var hairMat = new THREE.MeshLambertMaterial({color:Colors.brown});
+  var hairGeom = new THREE.BoxGeometry(54,14,14);
+  var hairMat = new THREE.MeshLambertMaterial({color:Colors.red});
   var hair = new THREE.Mesh(hairGeom, hairMat);
   hair.geometry.applyMatrix(new THREE.Matrix4().makeTranslation(0,2,0));
   var hairs = new THREE.Object3D();
@@ -249,7 +249,7 @@ var Pilot = function(){
   }
   hairs.add(this.hairsTop);
 
-  var hairSideGeom = new THREE.BoxGeometry(12,4,2);
+  var hairSideGeom = new THREE.BoxGeometry(42,24,2);
   hairSideGeom.applyMatrix(new THREE.Matrix4().makeTranslation(-6,0,0));
   var hairSideR = new THREE.Mesh(hairSideGeom, hairMat);
   var hairSideL = hairSideR.clone();
@@ -258,7 +258,7 @@ var Pilot = function(){
   hairs.add(hairSideR);
   hairs.add(hairSideL);
 
-  var hairBackGeom = new THREE.BoxGeometry(2,8,10);
+  var hairBackGeom = new THREE.BoxGeometry(22,8,10);
   var hairBack = new THREE.Mesh(hairBackGeom, hairMat);
   hairBack.position.set(-1,-4,0)
   hairs.add(hairBack);
@@ -266,8 +266,8 @@ var Pilot = function(){
 
   this.mesh.add(hairs);
 
-  var glassGeom = new THREE.BoxGeometry(5,5,5);
-  var glassMat = new THREE.MeshLambertMaterial({color:Colors.brown});
+  var glassGeom = new THREE.BoxGeometry(35,15,5);
+  var glassMat = new THREE.MeshLambertMaterial({color:Colors.black});
   var glassR = new THREE.Mesh(glassGeom,glassMat);
   glassR.position.set(6,0,3);
   var glassL = glassR.clone();
@@ -279,7 +279,7 @@ var Pilot = function(){
   this.mesh.add(glassL);
   this.mesh.add(glassA);
 
-  var earGeom = new THREE.BoxGeometry(2,3,2);
+  var earGeom = new THREE.BoxGeometry(1,1,1);
   var earL = new THREE.Mesh(earGeom,faceMat);
   earL.position.set(0,0,-6);
   var earR = earL.clone();
@@ -307,17 +307,13 @@ var AirPlane = function(){
 
   // Cabin
 
-  var geomCabin = new THREE.BoxGeometry(80,50,50,1,1,1);
-  var matCabin = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+  var geomCabin = new THREE.BoxGeometry(105,35,45);
+  var matCabin = new THREE.MeshPhongMaterial({color:Colors.az, shading:THREE.FlatShading});
 
-  geomCabin.vertices[4].y-=10;
-  geomCabin.vertices[4].z+=20;
-  geomCabin.vertices[5].y-=10;
-  geomCabin.vertices[5].z-=20;
-  geomCabin.vertices[6].y+=30;
-  geomCabin.vertices[6].z+=20;
-  geomCabin.vertices[7].y+=30;
-  geomCabin.vertices[7].z-=20;
+  geomCabin.vertices[4].y-=50;
+  geomCabin.vertices[4].z+=50;
+
+
 
   var cabin = new THREE.Mesh(geomCabin, matCabin);
   cabin.castShadow = true;
@@ -326,17 +322,17 @@ var AirPlane = function(){
 
   // Engine
 
-  var geomEngine = new THREE.BoxGeometry(20,50,50,1,1,1);
+  var geomEngine = new THREE.BoxGeometry(0,0,0);
   var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
   var engine = new THREE.Mesh(geomEngine, matEngine);
-  engine.position.x = 50;
+  engine.position.x = 30;
   engine.castShadow = true;
   engine.receiveShadow = true;
   this.mesh.add(engine);
 
   // Tail Plane
 
-  var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
+  var geomTailPlane = new THREE.BoxGeometry(0);
   var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
   var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
   tailPlane.position.set(-40,20,0);
@@ -346,7 +342,7 @@ var AirPlane = function(){
 
   // Wings
 
-  var geomSideWing = new THREE.BoxGeometry(30,5,120,1,1,1);
+  var geomSideWing = new THREE.BoxGeometry(0);
   var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
   var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
   sideWing.position.set(0,15,0);
@@ -354,7 +350,7 @@ var AirPlane = function(){
   sideWing.receiveShadow = true;
   this.mesh.add(sideWing);
 
-  var geomWindshield = new THREE.BoxGeometry(3,15,20,1,1,1);
+  var geomWindshield = new THREE.BoxGeometry(80,20,20); //vidrio de cabina
   var matWindshield = new THREE.MeshPhongMaterial({color:Colors.white,transparent:true, opacity:.3, shading:THREE.FlatShading});;
   var windshield = new THREE.Mesh(geomWindshield, matWindshield);
   windshield.position.set(5,27,0);
@@ -364,25 +360,17 @@ var AirPlane = function(){
 
   this.mesh.add(windshield);
 
-  var geomPropeller = new THREE.BoxGeometry(20,10,10,1,1,1);
-  geomPropeller.vertices[4].y-=5;
-  geomPropeller.vertices[4].z+=5;
-  geomPropeller.vertices[5].y-=5;
-  geomPropeller.vertices[5].z-=5;
-  geomPropeller.vertices[6].y+=5;
-  geomPropeller.vertices[6].z+=5;
-  geomPropeller.vertices[7].y+=5;
-  geomPropeller.vertices[7].z-=5;
+  var geomPropeller = new THREE.BoxGeometry(0,0,0);
   var matPropeller = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
   this.propeller = new THREE.Mesh(geomPropeller, matPropeller);
 
   this.propeller.castShadow = true;
   this.propeller.receiveShadow = true;
 
-  var geomBlade = new THREE.BoxGeometry(1,80,10,1,1,1);
+  var geomBlade = new THREE.BoxGeometry(0,0,0);
   var matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
   var blade1 = new THREE.Mesh(geomBlade, matBlade);
-  blade1.position.set(8,0,0);
+  blade1.position.set(0);
 
   blade1.castShadow = true;
   blade1.receiveShadow = true;
@@ -395,26 +383,28 @@ var AirPlane = function(){
 
   this.propeller.add(blade1);
   this.propeller.add(blade2);
-  this.propeller.position.set(60,0,0);
+  this.propeller.position.set(0,0,0);
   this.mesh.add(this.propeller);
 
-  var wheelProtecGeom = new THREE.BoxGeometry(30,15,10,1,1,1);
-  var wheelProtecMat = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+  var wheelProtecGeom = new THREE.BoxGeometry(75,10,15);
+  var wheelProtecMat = new THREE.MeshPhongMaterial({color:Colors.az, shading:THREE.FlatShading});
   var wheelProtecR = new THREE.Mesh(wheelProtecGeom,wheelProtecMat);
-  wheelProtecR.position.set(25,-20,25);
+  wheelProtecR.position.set(75,-30,55);
   this.mesh.add(wheelProtecR);
 
-  var wheelTireGeom = new THREE.BoxGeometry(24,24,4);
+  var wheelTireGeom = new THREE.BoxGeometry(0,0,0);//lantas
   var wheelTireMat = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
   var wheelTireR = new THREE.Mesh(wheelTireGeom,wheelTireMat);
-  wheelTireR.position.set(25,-28,25);
+  wheelTireR.position.set(25,-38,25);
 
-  var wheelAxisGeom = new THREE.BoxGeometry(10,10,6);
+
+  var wheelAxisGeom = new THREE.BoxGeometry(0,0,0); //lantas
   var wheelAxisMat = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
   var wheelAxis = new THREE.Mesh(wheelAxisGeom,wheelAxisMat);
   wheelTireR.add(wheelAxis);
 
   this.mesh.add(wheelTireR);
+
 
   var wheelProtecL = wheelProtecR.clone();
   wheelProtecL.position.z = -wheelProtecR.position.z ;
@@ -449,20 +439,20 @@ var AirPlane = function(){
 
 Sky = function(){
   this.mesh = new THREE.Object3D();
-  this.nClouds = 20;
+  this.nClouds = 65;
   this.clouds = [];
-  var stepAngle = Math.PI*2 / this.nClouds;
+  var stepAngle = Math.PI*4 / this.nClouds;
   for(var i=0; i<this.nClouds; i++){
     var c = new Cloud();
     this.clouds.push(c);
     var a = stepAngle*i;
-    var h = game.seaRadius + 150 + Math.random()*200;
+    var h = game.seaRadius + 250 + Math.random()*100;
     c.mesh.position.y = Math.sin(a)*h;
     c.mesh.position.x = Math.cos(a)*h;
     c.mesh.position.z = -300-Math.random()*500;
-    c.mesh.rotation.z = a + Math.PI/2;
-    var s = 1+Math.random()*2;
-    c.mesh.scale.set(s,s,s);
+    c.mesh.rotation.z = a + Math.PI/5;
+    var s = 1+Math.random()*1.5;
+    c.mesh.scale.set(2,2,2);
     this.mesh.add(c.mesh);
   }
 }
@@ -477,8 +467,8 @@ Sky.prototype.moveClouds = function(){
 }
 
 Sea = function(){
-  var geom = new THREE.CylinderGeometry(game.seaRadius,game.seaRadius,game.seaLength,40,10);
-  geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
+  var geom = new THREE.CylinderGeometry(game.seaRadius,game.seaRadius,game.seaLength,60,40);
+  geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2.5));
   geom.mergeVertices();
   var l = geom.vertices.length;
 
@@ -496,9 +486,9 @@ Sea = function(){
                     });
   };
   var mat = new THREE.MeshPhongMaterial({
-    color:Colors.blue,
+    color:Colors.bluef,
     transparent:true,
-    opacity:.8,
+    opacity:.15,
     shading:THREE.FlatShading,
 
   });
@@ -525,9 +515,9 @@ Sea.prototype.moveWaves = function (){
 Cloud = function(){
   this.mesh = new THREE.Object3D();
   this.mesh.name = "cloud";
-  var geom = new THREE.CubeGeometry(20,20,20);
+  var geom = new THREE.CubeGeometry(50,50,50); //Acercamos las nubes 
   var mat = new THREE.MeshPhongMaterial({
-    color:Colors.white,
+    color:Colors.mor
 
   });
 
@@ -560,9 +550,9 @@ Cloud.prototype.rotate = function(){
 }
 
 Ennemy = function(){
-  var geom = new THREE.TetrahedronGeometry(8,2);
+  var geom = new THREE.TetrahedronGeometry(5,5);
   var mat = new THREE.MeshPhongMaterial({
-    color:Colors.red,
+    color:Colors.mora,
     shininess:0,
     specular:0xffffff,
     shading:THREE.FlatShading
@@ -615,7 +605,7 @@ EnnemiesHolder.prototype.rotateEnnemies = function(){
     var diffPos = airplane.mesh.position.clone().sub(ennemy.mesh.position.clone());
     var d = diffPos.length();
     if (d<game.ennemyDistanceTolerance){
-      particlesHolder.spawnParticles(ennemy.mesh.position.clone(), 15, Colors.red, 3);
+      particlesHolder.spawnParticles(ennemy.mesh.position.clone(), 15, Colors.mora, 3);
 
       ennemiesPool.unshift(this.ennemiesInUse.splice(i,1)[0]);
       this.mesh.remove(ennemy.mesh);
@@ -634,7 +624,7 @@ EnnemiesHolder.prototype.rotateEnnemies = function(){
 }
 
 Particle = function(){
-  var geom = new THREE.TetrahedronGeometry(3,0);
+  var geom = new THREE.TetrahedronGeometry(3,5);
   var mat = new THREE.MeshPhongMaterial({
     color:0x009999,
     shininess:0,
@@ -652,7 +642,7 @@ Particle.prototype.explode = function(pos, color, scale){
   this.mesh.scale.set(scale, scale, scale);
   var targetX = pos.x + (-1 + Math.random()*2)*50;
   var targetY = pos.y + (-1 + Math.random()*2)*50;
-  var speed = .6+Math.random()*.2;
+  var speed = .3+Math.random()*.2;
   TweenMax.to(this.mesh.rotation, speed, {x:Math.random()*12, y:Math.random()*12});
   TweenMax.to(this.mesh.scale, speed, {x:.1, y:.1, z:.1});
   TweenMax.to(this.mesh.position, speed, {x:targetX, y:targetY, delay:Math.random() *.1, ease:Power2.easeOut, onComplete:function(){
@@ -687,9 +677,9 @@ ParticlesHolder.prototype.spawnParticles = function(pos, density, color, scale){
 }
 
 Coin = function(){
-  var geom = new THREE.TetrahedronGeometry(5,0);
+  var geom = new THREE.TetrahedronGeometry(3,1,3);
   var mat = new THREE.MeshPhongMaterial({
-    color:0x009999,
+    color: 0x15EB4B,
     shininess:0,
     specular:0xffffff,
 
@@ -749,7 +739,7 @@ CoinsHolder.prototype.rotateCoins = function(){
     if (d<game.coinDistanceTolerance){
       this.coinsPool.unshift(this.coinsInUse.splice(i,1)[0]);
       this.mesh.remove(coin.mesh);
-      particlesHolder.spawnParticles(coin.mesh.position.clone(), 5, 0x009999, .8);
+      particlesHolder.spawnParticles(coin.mesh.position.clone(), 5, 0x15EB4B, .8);
       addEnergy();
       i--;
     }else if (coin.angle > Math.PI){
@@ -767,7 +757,7 @@ var airplane;
 
 function createPlane(){
   airplane = new AirPlane();
-  airplane.mesh.scale.set(.25,.25,.25);
+  airplane.mesh.scale.set(.20,.20,.20); //Cambiamos el tamaño 
   airplane.mesh.position.y = game.planeDefaultHeight;
   scene.add(airplane.mesh);
 }
