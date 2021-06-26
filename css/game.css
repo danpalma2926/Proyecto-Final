@@ -28,11 +28,11 @@ body {
 
 .header h1 {
 	font-family: 'Indie Flower', cursive;
-	font-size: 4.5em;
+	font-size: 5.5em;
 	line-height: 1;
 	margin: 0;
 	letter-spacing: -0.025em;
-	color: #d1b790;
+	color: whitesmoke;
 }
 
 .header h1 span {
@@ -54,38 +54,48 @@ body {
 }
 
 .score {
+	display: flex;
+	flex-direction:row;
 	width: 100%;
-	margin: 2em 0 0;
+	margin: -5em 0 700;
 	text-align: center;
 	white-space: nowrap;
+	color: whitesmoke;
 }
 
 .score__content {
+	display: flex;
+	flex-direction: row;
 	position: relative;
 	display: inline-block;
 	padding: 0 1em;
 	vertical-align: top;
+	color: whitesmoke;
 }
 
 .score__content:nth-child(2) {
-	border-right: 1px solid #d1b790;
-	border-left: 1px solid #d1b790;
+	display: flex;
+	flex-direction: column;
+	border-right: 1px solid whitesmoke;
+	border-left: 1px solid whitesmoke;
 }
 
 .score__label {
+	display: flex;
+	flex-direction: column;
 	font-size: 9px;
 	position: relative;
 	margin: 0 0 0.5em 0;
 	text-align: center;
 	letter-spacing: 3px;
 	text-transform: uppercase;
-	color: #d1b790;
+	color: whitesmoke;
 }
 
 .score__value {
 	font-family: 'Playfair Display';
 	font-weight: bold;
-	color: #d1b790;
+	color: whitesmoke;
 }
 
 .score__value--level {
@@ -106,15 +116,19 @@ body {
 }
 
 .score__value--energy {
+	display: flex;
+	flex-direction: column;
 	position: relative;
 	width: 60px;
 	height: 8px;
 	margin-top: 20px;
 	border-radius: 3px;
-	background-color: #d1b790;
+	background-color: whitesmoke;
 }
 
 .energy-bar {
+	display: flex;
+	flex-direction: column;
 	position: absolute;
 	top: 0;
 	right: 0;
