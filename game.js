@@ -1,6 +1,6 @@
 window.onload = function() {
 
-	var game = new Phaser.Game(1300, 800, Phaser.CANVAS, 'FlappyBird');
+	var game = new Phaser.Game(1980, 1080, Phaser.CANVAS, 'FlappyBird');
 
 	var bird;
 
@@ -15,9 +15,9 @@ window.onload = function() {
 	var pipeHole = 215;
 	var pipeGroup;
 	var Socket = new WebSocket('ws://' + '192.168.0.11' + ':81')
-  var play = function(game){};
+  	var play = function(game){};
 
-  play.prototype = {
+    play.prototype = {
 		preload:function(){
 		  
 			game.load.spritesheet("bird",'birdSprite.png',45,32,3);
@@ -30,8 +30,7 @@ window.onload = function() {
 			game.stage.backgroundColor = "#000000";
 			game.stage.disableVisibilityChange = false;
 			game.physics.startSystem(Phaser.Physics.ARCADE);
-			//const bck = this.add.image('0','0', 'background');
-			//bck.z = -1
+
 			bird = game.add.sprite(80,240,"bird");
 			bird.animations.add("fly");
 			bird.animations.play("fly",6,true);
@@ -77,7 +76,7 @@ window.onload = function() {
 		pipeGroup.add(upperPipe);
 		var lowerPipe = new Pipe(game,320,pipeHolePosition+pipeHole,-birdSpeed);
 		game.add.existing(lowerPipe);
-		pipeGroup.add(lowerPipe)
+		pipeGroup.add(lowerPipe);
 		
 	}
 
@@ -86,11 +85,11 @@ window.onload = function() {
 	}
 
 
+
 	Pipe = function (game, x, y, speed) {
 		Phaser.Sprite.call(this, game, x, y, "pipe");
 		game.physics.enable(this, Phaser.Physics.ARCADE);
 		this.body.velocity.x = speed;
-		this.z = 11
 	};
 
 	Pipe.prototype = Object.create(Phaser.Sprite.prototype);
