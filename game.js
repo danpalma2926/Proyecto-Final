@@ -12,9 +12,9 @@ window.onload = function() {
 
 	var pipeInterval = 2000;
 
-	var pipeHole = 120;
+	var pipeHole = 215;
 	var pipeGroup;
-
+	var Socket = new WebSocket('ws://' + '192.168.0.11' + ':81')
   var play = function(game){};
 
   play.prototype = {
@@ -22,14 +22,16 @@ window.onload = function() {
 		  
 			game.load.spritesheet("bird",'birdSprite.png',45,32,3);
 			game.load.image("pipe", "pipe.png");
-
+			this.load.image("background", 'fondo1.jpg');
+			
 		},
 		create:function(){
 			pipeGroup = game.add.group();
-			game.stage.backgroundColor = "#87CEEB";
-			game.stage.disableVisibilityChange = true;
+			game.stage.backgroundColor = "#000000";
+			game.stage.disableVisibilityChange = false;
 			game.physics.startSystem(Phaser.Physics.ARCADE);
-
+			//const bck = this.add.image('0','0', 'background');
+			//bck.z = -1
 			bird = game.add.sprite(80,240,"bird");
 			bird.animations.add("fly");
 			bird.animations.play("fly",6,true);
@@ -53,9 +55,18 @@ window.onload = function() {
    game.state.add("Play",play);
    game.state.start("Play");
 
+    Socket.onmessage = function (e) {
+		if (parseInt(e.data) < 150) {
+			flap();
+		}
+			
+	};
+
 	function flap(){
 		bird.body.velocity.y = -birdFlapPower;
 	}
+
+
 
 	function addPipe(){
 
@@ -66,7 +77,8 @@ window.onload = function() {
 		pipeGroup.add(upperPipe);
 		var lowerPipe = new Pipe(game,320,pipeHolePosition+pipeHole,-birdSpeed);
 		game.add.existing(lowerPipe);
-		pipeGroup.add(lowerPipe);
+		pipeGroup.add(lowerPipe)
+		
 	}
 
 	function die(){
@@ -78,6 +90,7 @@ window.onload = function() {
 		Phaser.Sprite.call(this, game, x, y, "pipe");
 		game.physics.enable(this, Phaser.Physics.ARCADE);
 		this.body.velocity.x = speed;
+		this.z = 11
 	};
 
 	Pipe.prototype = Object.create(Phaser.Sprite.prototype);
