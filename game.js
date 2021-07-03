@@ -22,7 +22,7 @@ window.onload = function() {
 		  
 			game.load.spritesheet("bird",'birdSprite.png',45,32,3);
 			game.load.image("pipe", "pipe.png");
-			this.load.image("background", 'fondo1.jpg');
+			//this.load.image("background", 'fondo1.jpg');
 			
 		},
 		create:function(){
